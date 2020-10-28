@@ -86,22 +86,11 @@ def ordered(scores):
         scores_temp[student].append(index + 1)
 
 
-    while not ord:
-        ord = True
-        for index in range(1, len(scores_temp) - 1):
-            if(get_summed_score_student(scores_temp, "elev" + str(index)) > get_summed_score_student(scores_temp, "elev" + str(index + 1))) and scores_temp["elev" + str(index)] < scores_temp["elev" + str(index + 1)]:
-                scores_temp["elev" + str(index)][-1], scores_temp["elev" + str(index + 1)][-1] = scores_temp["elev" + str(index + 1)][-1], scores_temp["elev" + str(index)][-1]
-                ord = False
+    for indexPrimary in range(1, len(scores_temp) + 1):
+        for indexSecondary in range(indexPrimary, len(scores_temp) + 1):
+            if(get_summed_score_student_for_sorting(scores_temp, "elev" + str(indexPrimary)) > get_summed_score_student_for_sorting(scores_temp, "elev" + str(indexSecondary))) and scores_temp["elev" + str(indexPrimary)][-1] < scores_temp["elev" + str(indexSecondary)][-1]:
+                scores_temp["elev" + str(indexPrimary)][-1], scores_temp["elev" + str(indexSecondary)][-1] = scores_temp["elev" + str(indexSecondary)][-1], scores_temp["elev" + str(indexPrimary)][-1]
 
-    '''while not ord:
-        ord = True
-        for index, student in enumerate(scores_temp.keys()):
-            if index == len(scores_temp) - 1:
-                break
-            if (get_summed_score_student(scores_temp, student) > get_summed_score_student(scores_temp, "elev" + str(index + 2))) and scores_temp[student][-1] < scores_temp["elev" + str(index + 2)][-1]:
-                scores_temp[student][-1], scores_temp["elev" + str(index + 2)][-1] = scores_temp["elev" + str(index + 2)][-1], scores_temp[student][-1]
-                
-                ord = False'''
     return makeSenseOfOrderedScores(scores_temp)
 
 
@@ -217,7 +206,7 @@ def undo(scores, list_of_scores_along_time):
 def update_list_of_scores_along_time(scores, list_of_scores_along_time):
     #Functie care actualizeaza lista de scoruri de-a lungul timpului
     #Date de intrare: scores Dict, list... List[Dicts]
-    #Date de iessire;: -
+    #Date de iesire: -
     list_of_scores_along_time.append(createCopyOfCurrentGrades(scores))
 
 

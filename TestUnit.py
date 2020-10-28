@@ -87,6 +87,3 @@ def runAllTests():
     test_multiple_of_10(testing_scores_list, 1, 3)
     test_filter(testing_scores_list, 5)
     test_filter_less_than(testing_scores_list, 11)
-
-
-runAllTests()
