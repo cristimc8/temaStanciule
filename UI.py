@@ -46,37 +46,43 @@ def wait_for_input():
     return n
 
 
+def print_result(result_from_action):
+    #Functia care tipareste rezultatul functiei
+    #Date de intrare: result_from_action Dict | String
+    print(result_from_action)
+
+
 def do_action(scores, command, list_of_scores_along_time):
     #Functia care executa comanda utilizatorului
     #Date de intrare: command String
     #Date de iesire: -
+    commands_dictionary = {"adauga_scor": add_score, "insereaza_scor": insert_score, "sterge_scor": delete_score, "sterge_interval": delete_range,
+    "inlocuieste": replace, "mai_mic": lower_than, "ordonat": ordered, "mai_mare": bigger_than, "media": scores_range, "minim": minimum,
+    "multiplu_10": multiple_of_10}
     try:
-        cmd = command.split()[0]
-        if cmd == "adauga_scor": add_score(scores, int(command.split()[1]))
-        elif cmd == "insereaza_scor": insert_score(scores, "elev" + str(command.split()[1]), int(command.split()[2]))
-        elif cmd == "sterge_scor": delete_score(scores, "elev" + str(command.split()[1]))
-        elif cmd == "sterge_interval": delete_range(scores, int(command.split()[1]), int(command.split()[2]))
-        elif cmd == "inlocuieste": replace(scores, "elev" + str(command.split()[1]), int(command.split()[2]), int(command.split()[3]))
-        elif cmd == "mai_mic": print(lower_than(scores, int(command.split()[1])))
-        elif cmd == "ordonat": print(ordered(scores))
-        elif cmd == "mai_mare": print(bigger_than(scores, int(command.split()[1])))
-        elif cmd == "media": print(scores_range(scores, int(command.split()[1]), int(command.split()[2])))
-        elif cmd == "minim": print(minimum(scores, int(command.split()[1]), int(command.split()[2])))
-        elif cmd == "multiplu_10": print(multiple_of_10(scores, int(command.split()[1]), int(command.split()[2])))
-        elif cmd == "filtrare": 
-            filter(scores, int(command.split()[1]))
-            print(scores)
-        elif cmd == "filtrare_mai_mic":
-            filter_less_than(scores, int(command.split()[1]))
-            print(scores)
-        elif cmd == "undo": 
-            scores = undo(scores, list_of_scores_along_time)
+        cmd_params = split_command(command)
+        cmd = cmd_params["cmd"]
+        arg1 = cmd_params['arg1']
+        arg2 = cmd_params['arg2']
+        arg3 = cmd_params['arg3']
+
+        if cmd in commands_dictionary:
+            if arg3 is not None:
+                print_result(commands_dictionary[cmd](scores, arg1, arg2, arg3))
+            elif arg2 is not None:
+                print_result(commands_dictionary[cmd](scores, arg1, arg2))
+            elif arg1 is not None:
+                print_result(commands_dictionary[cmd](scores, arg1))    
+            elif arg1 is None:
+                print_result(commands_dictionary[cmd](scores))      
+        elif cmd == 'undo':
+            scores = undo(scores, list_of_scores_along_time)  
             print("Ai dat timpul inapoi!!\n" + str(scores))
         else: 
-            if cmd != 'out': print("Comanda inexistenta!")
-        print("\n" * 3)
-
+            print(cmd)
+            if cmd != 'out': print("Comanda nu exista!")
         check_for_eligibility(cmd, scores, list_of_scores_along_time)
+        print("\n" * 3)
         return scores
 
         

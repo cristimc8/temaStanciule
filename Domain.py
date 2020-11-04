@@ -3,7 +3,7 @@ def get_scores_student(scores, student):
     #Date de intrare: scores Dict
     #                 student String
     #Date de iesire: scores List<Int>
-    return scores[student]
+    return scores[get_student_name(student)]
 
 
 def get_last_student_number(scores):
@@ -75,3 +75,10 @@ def get_summed_score_student_for_sorting(scores, student):
         if index == len(get_scores_student(scores, student)) - 1: break
         sum += score
     return sum
+
+
+def get_student_name(number):
+    #Functie care returneaza numele studentului pe baza numarului
+    #Date de intrare: number Int
+    #Date de iesire: nume String
+    return "elev" + str(number)

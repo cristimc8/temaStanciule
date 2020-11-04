@@ -18,13 +18,14 @@ def insert_score(scores, student, new_score):
     if get_number_of_grades(scores, student) == 10:
         #errorMessage("Acest elev are deja 10 note!")
         return
-    scores[student].append(new_score)
+    scores[get_student_name(student)].append(new_score)
 
 
 def delete_score(scores, student):
     #Functie care sterge un scor de la un elev
     #Date de intrare: scores
     #Date de iesire: -
+    student = get_student_name(student)
     scores[student] = []
 
 
@@ -46,7 +47,7 @@ def replace(scores, student, position, new_grade):
     if position > get_number_of_grades(scores, student): 
         #errorMessage("Elevul " + str(student) + " nu are atatea note!")
         return
-    scores[student][position - 1] = new_grade 
+    scores[get_student_name(student)][position - 1] = new_grade 
 
 
 def lower_than(scores, score):
@@ -55,7 +56,7 @@ def lower_than(scores, score):
     #Date de iesire: lista_criterii
     summed_scores = {}
     for i in range(1, len(scores) + 1):
-        if student_exists(scores, "elev" + str(i)) and get_summed_score_student(scores, "elev" + str(i)) < score:
+        if student_exists(scores, "elev" + str(i)) and get_summed_score_student(scores, i) < score:
             summed_scores["elev" + str(i)] = scores["elev" + str(i)]
     return summed_scores
 
@@ -88,7 +89,7 @@ def ordered(scores):
 
     for indexPrimary in range(1, len(scores_temp) + 1):
         for indexSecondary in range(indexPrimary, len(scores_temp) + 1):
-            if(get_summed_score_student_for_sorting(scores_temp, "elev" + str(indexPrimary)) > get_summed_score_student_for_sorting(scores_temp, "elev" + str(indexSecondary))) and scores_temp["elev" + str(indexPrimary)][-1] < scores_temp["elev" + str(indexSecondary)][-1]:
+            if(get_summed_score_student_for_sorting(scores_temp, indexPrimary) > get_summed_score_student_for_sorting(scores_temp, indexSecondary)) and scores_temp["elev" + str(indexPrimary)][-1] < scores_temp["elev" + str(indexSecondary)][-1]:
                 scores_temp["elev" + str(indexPrimary)][-1], scores_temp["elev" + str(indexSecondary)][-1] = scores_temp["elev" + str(indexSecondary)][-1], scores_temp["elev" + str(indexPrimary)][-1]
 
     return makeSenseOfOrderedScores(scores_temp)
@@ -101,7 +102,7 @@ def bigger_than(scores, score):
     summed_scores = {}
     ord_scores = ordered(scores)
     for i in range(1, len(ord_scores) + 1):
-        if student_exists(ord_scores, "elev" + str(i)) and get_summed_score_student(ord_scores, "elev" + str(i)) > score:
+        if student_exists(ord_scores, "elev" + str(i)) and get_summed_score_student(ord_scores, i) > score:
             summed_scores["elev" + str(i)] = ord_scores["elev" + str(i)]
     return summed_scores
 
@@ -115,7 +116,7 @@ def scores_range(scores, low, high):
     number_of_studs = 0
     for index in range(low, high + 1):
         if student_exists(scores, "elev" + str(index)):
-            for score in get_scores_student(scores, "elev" + str(index)):
+            for score in get_scores_student(scores, index):
                 media += score
             number_of_studs += 1
     media /= number_of_studs
@@ -130,8 +131,8 @@ def minimum(scores, low, high):
     minName = ''
     for index in range(low, high + 1):
         if student_exists(scores, "elev" + str(index)):
-            if get_summed_score_student(scores, "elev" + str(index)) < minGrade and get_summed_score_student(scores, "elev" + str(index)) != 0:
-                minGrade = get_summed_score_student(scores, "elev" + str(index))
+            if get_summed_score_student(scores, index) < minGrade and get_summed_score_student(scores, index) != 0:
+                minGrade = get_summed_score_student(scores, index)
                 minName = "elev" + str(index)
 
     if minGrade == 11:
@@ -146,7 +147,7 @@ def multiple_of_10(scores, low, high):
     students = {}
     for index in range(low, high + 1):
         if student_exists(scores, "elev" + str(index)):
-            if get_summed_score_student(scores, "elev" + str(index)) % 10 == 0 and get_number_of_grades(scores, "elev" + str(index)) != 0:
+            if get_summed_score_student(scores, index) % 10 == 0 and get_number_of_grades(scores, index) != 0:
                 students["elev" + str(index)] = scores["elev" + str(index)].copy()
     if students == {}:
         raise Exception("Nu au fost gasiti studenti cu note multiplu de 10!")
@@ -158,7 +159,7 @@ def filter(scores, score):
     #Date de intrare: scores Dict, score Int
     #Date de iesire: -
     for student in scores.keys():
-        if get_summed_score_student(scores, student) % score != 0:
+        if get_summed_score_student(scores, student[-1]) % score != 0:
             scores[student] = []
 
 
@@ -167,7 +168,7 @@ def filter_less_than(scores, score):
     #Date de intrare: scores Dict, score Int
     #Date de iesire: -
     for student in scores.keys():
-        if get_summed_score_student(scores, student) > score:
+        if get_summed_score_student(scores, student[-1]) > score:
             scores[student] = []
 
 
@@ -216,3 +217,44 @@ def check_for_eligibility(command, scores, list_of_scores_along_time):
     #Date de iesire: -
     if command in ["adauga_scor", "insereaza_scor", "sterge_scor", "sterge_interval", "inlocuieste", "filtrare", "filtrare_mai_mic"]:
         update_list_of_scores_along_time(scores, list_of_scores_along_time)
+
+
+def initialize_params_to_none():
+    return {"cmd": None, "arg1": None, "arg2": None, "arg3": None}
+
+
+def isNumber(string):
+    #Functie care verifica daca un string dat de utilizator este numar sau nu
+    #Date de intrare: string String
+    #Date de iesire: True / False
+    try:
+        value = int(string)
+    except ValueError as ve:
+        return False
+    return True
+
+
+def split_command(cmd):
+    '''
+    Functie care imparte comanda in parametrii
+    @param cmd: String-ul comenzii
+    @out: @param params_to_return Dict
+    '''
+    error_is_not_number = "Parametrii trebuie sa fie numere!"
+    if cmd == "out": return initialize_params_to_none()
+    params = cmd.split()
+    params_to_return = initialize_params_to_none()
+    length = len(params)
+    if length == 0: raise IndexError("Nu ai scris destule argumente!")
+
+    params_to_return["cmd"] = params[0]
+    if length >= 2:
+        if not isNumber(params[1]): raise ValueError(error_is_not_number)
+        params_to_return["arg1"] = int(params[1])
+    if length >= 3:
+        if not isNumber(params[2]): raise ValueError(error_is_not_number)
+        params_to_return["arg2"] = int(params[2])
+    if length >= 4:
+        if not isNumber(params[3]): raise ValueError(error_is_not_number)
+        params_to_return["arg3"] = int(params[3])
+    return params_to_return

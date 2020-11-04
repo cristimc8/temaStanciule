@@ -4,7 +4,7 @@ from Domain import *
 
 def test_add_new_score(scores):
     add_score(scores, 8)
-    assert(get_scores_student(scores, get_last_student_name(scores)) == [8])
+    assert(get_scores_student(scores, get_last_student_number(scores)) == [8])
 
 
 def test_insert_score(scores, student, new_score):
@@ -74,16 +74,16 @@ def runAllTests():
     #Functia care ruleaza toate testele
     testing_scores_list = {"elev1": [1, 4, 5, 6], "elev2": [1, 5, 3], "elev3": [10], "elev4": [1, 5], "elev5": [5, 10]}
     test_add_new_score(testing_scores_list)
-    test_insert_score(testing_scores_list, "elev3", 7)
-    test_delete_score(testing_scores_list, "elev1")
+    test_insert_score(testing_scores_list, 3, 7)
+    test_delete_score(testing_scores_list, 1)
     test_delete_range(testing_scores_list, 1, 3)
-    test_replace(testing_scores_list, "elev4", 2, 7)
+    test_replace(testing_scores_list, 4, 2, 7)
     test_lower_than(testing_scores_list, 9)
     test_ordered(testing_scores_list)
     test_bigger_than(testing_scores_list, 10)
     test_media(testing_scores_list, 1, 4)
     test_minimum(testing_scores_list, 1, 2)
-    insert_score(testing_scores_list, "elev3", 10)
+    insert_score(testing_scores_list, 3, 10)
     test_multiple_of_10(testing_scores_list, 1, 3)
     test_filter(testing_scores_list, 5)
     test_filter_less_than(testing_scores_list, 11)
